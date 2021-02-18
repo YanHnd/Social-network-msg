@@ -1,9 +1,9 @@
 import React from 'react'
 
-export default function messagerie() {
+export default function Dashboard() {
     return (
         <div>
-            <h1>messagerie </h1>
+            <h1>Bienvenue </h1>
         </div>
     )
 }

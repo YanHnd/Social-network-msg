@@ -1,11 +1,11 @@
 import React from 'react'
 import { Route, BrowserRouter as Router, Switch } from 'react-router-dom'
 import './App.css'
-import dashboard from './dashboard/dashboard'
-import filActualite from './filActualite/filActualite'
-import iterfaceUser from './interfaceUser/interfaceUser'
-import messagerie from './messagerie/messagerie'
-import profilUser from './profilUser/profilUser'
+import dashboard from './Components/dashboard/dashboard'
+import filActualite from './Components/filActualite/filActualite'
+import iterfaceUser from './Components/interfaceUser/interfaceUser'
+import messagerie from './Components/messagerie/messagerie'
+import profilUser from './Components/profilUser/profilUser'
 
 function App() {
     return (

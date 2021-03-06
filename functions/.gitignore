@@ -1,1 +1,3 @@
-node_modules/
+node_modules
+# ignores a few log files firebase creates when running functions locally
+*.log

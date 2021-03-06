@@ -1,38 +1,41 @@
-var serviceAccount = require("./permission.json");
-const functions = require('firebase-functions');
-const admin = require('firebase-admin');
-const express = require('express');
-const cors = require('cors');
+const functions = require("firebase-functions");
+const express = require("express");
+const bodyParser = require("body-parser");
+const cors = require("cors");
 const app = express();
 
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-  databaseURL: "https://studup-dc5db-default-rtdb.europe-west1.firebasedatabase.app"
-});
-//initialisationd e la bd 
+//CORS request
 
-const db = admin.firestore();
+app.use(
+  cors({
+    origin: true,
+  })
+);
 
-//endpoint
-app.use(cors({ origin: true }));
+const {
+  signUp,
+  signIn,
+  followUser,
+  unFollow,
+  getfollowingUsers,
+} = require("./Handlers/users");
+const { NotifLikeData, getUserDetails } = require("./Handlers/data");
 
-app.get('/', (req, res) => {
-  return res.status(200).send('yes');
-});
+const { isAuth } = require("./Util/isAuth");
 
-// deuxieme endpoint par exemple
+//BodyParser
 
-app.post('/api/post', (req, res) => {
-    (async () => {
-        try {
-          await db.collection('posts').doc('/' + req.body.id + '/')
-              .create({user: req.body.item});
-          return res.status(200).send();
-        } catch (error) {
-          console.log(error);
-          return res.status(500).send(error);
-        }
-      })();
-  });
+app.use(bodyParser.json());
+var port = process.env.PORT || 5000;
+
+// API endpoints
+
+app.post("/users/signUp", signUp);
+app.post("/users/signIn", signIn);
+app.post("/users/followUser", followUser); //en cours
+app.post("/users/unFollow", unFollow); //en cours
+app.post("/users/getFollowingUsers", getfollowingUsers); //en cours
+app.get("/users/NotifLikeData", NotifLikeData);
+app.get("/users/getUserDetails/:username", getUserDetails);
 
 exports.app = functions.https.onRequest(app);

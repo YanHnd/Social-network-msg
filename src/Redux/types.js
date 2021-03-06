@@ -10,9 +10,9 @@ export const CLEAR_ERRORS = "CLEAR_ERRORS";
 export const LOADING_DATA = "LOADING_DATA";
 export const STOP_LOADING_UI = "STOP_LOADING_UI";
 // Data reducer types
-export const SET_POST = "SET_SCREAMS";
-export const LIKE_POST = "LIKE_SCREAM";
-export const UNLIKE_POST = "UNLIKE_SCREAM";
-export const DELETE_POST = "DELETE_SCREAM";
-export const SUBMIT_POST = "POST_SCREAM";
+export const SET_POST = "SET_POST";
+export const LIKE_POST = "LIKE_POST";
+export const UNLIKE_POST = "UNLIKE_POST";
+export const DELETE_POST = "DELETE_POST";
+export const SUBMIT_POST = "SUBMIT_POST";
 export const SUBMIT_COMMENT = "SUBMIT_COMMENT";

@@ -55,7 +55,14 @@ exports.getUserDetails = (req, res) => {
     .get()
     .then((doc) => {
       if (doc.exists) {
-        userData.user = doc.data();
+        userData.user = {
+          uid: doc.data().uid,
+          email: doc.data().email,
+          firstname: doc.data().FirstName,
+          lastname: doc.data().LastName,
+          username: doc.data().username,
+          creatdAt: doc.data().creatAt,
+        };
         return db
           .collection("posts")
           .where("username", "==", req.params.username)

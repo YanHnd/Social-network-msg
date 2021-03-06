@@ -1,17 +1,18 @@
-const { provider, auth } = require("../Util/init");
-const { admin, db } = require("../Util/admin");
-
+const firebase = require("firebase");
+const admin = require("firebase-admin");
+const provider = new firebase.auth.FacebookAuthProvider();
 provider.setCustomParameters({
   display: "popup",
 });
 
 export const signInFacebook = (history, setAuthorizationHeader) => {
-  return auth.signInWithPopup(provider).then((result) => {
+  return firebase.auth.signInWithPopup(provider).then((result) => {
     var user = result.user;
-    var accessToken = credential.accessToken;
+    var accessToken = result.credential.accessToken;
     const name = user.displayName.split("");
     const username = name[0].concat(name[1]);
-    db.collection("Users")
+    admin.firestore
+      .collection("Users")
       .doc(user.email)
       .get()
       .then((snapshot) => {
@@ -28,9 +29,9 @@ export const signInFacebook = (history, setAuthorizationHeader) => {
           location: user.hometown,
         };
         if (snapshot.exists) {
-          db.collection("Users").update(newuser);
+          admin.firestore.collection("Users").update(newuser);
         } else {
-          db.collection("Users").doc(username).set(newuser);
+          admin.firestore.collection("Users").doc(username).set(newuser);
         }
       })
       .then(() => {

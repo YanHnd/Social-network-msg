@@ -33,7 +33,7 @@ exports.signUp = (req, res) => {
               uid: userId,
               username: signUpinfo.username,
             };
-            db.collection("Users").doc(signUpinfo.username).set(newUser);
+            db.collection("Users").doc(signUpinfo.user).set(newUser);
             return res
               .status(200)
               .json({ utilisateur: "profile crée avec succés" });

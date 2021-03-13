@@ -1,5 +1,7 @@
 const { admin, db } = require("../Util/admin");
-const { auth } = require("../Util/init");
+const { auth } = require("../../src/init");
+const firebase = require("firebase");
+require("firebase/firestore");
 
 exports.signUp = (req, res) => {
   let signUpinfo = {
@@ -33,7 +35,7 @@ exports.signUp = (req, res) => {
               uid: userId,
               username: signUpinfo.username,
             };
-            db.collection("Users").doc(signUpinfo.user).set(newUser);
+            db.collection("Users").doc(signUpinfo.username).set(newUser);
             return res
               .status(200)
               .json({ utilisateur: "profile crée avec succés" });
@@ -55,6 +57,7 @@ exports.signIn = (req, res) => {
     email: req.body.email,
     password: req.body.password,
   };
+  console.log(userInfo);
 
   auth
     .signInWithEmailAndPassword(userInfo.email, userInfo.password)
@@ -64,8 +67,8 @@ exports.signIn = (req, res) => {
     })
     .then((Token) => {
       const idToken = Token;
-      console.log("bien joué ");
-      res.status(200).send(idToken);
+      console.log(idToken);
+      return res.status(200).send(idToken);
     })
     .catch((e) => {
       console.error(e);
@@ -73,21 +76,70 @@ exports.signIn = (req, res) => {
     });
 };
 
-exports.followUser = (req, res) => {
-  let newFollow = {
-    following: req.body.follower,
-    followed: req.body.following,
+exports.SendFollowRequest = (req, res) => {
+  let FollowRequest = {
+    Owner: req.body.Owner,
+    AccountName: req.body.AccountName,
     status: "pending",
     date: new Date().toISOString(),
   };
-  db.collection("follows")
-    .add(newFollow)
-    .then(() => {
-      return res.status(200).json({ success: " following request sent" });
+  db.collection("followRequest")
+    .where("Owner", "==", FollowRequest.Owner)
+    .get()
+    .then((doc) => {
+      if (doc.size > 0) {
+        res.status(501).json({ error: "rquest already sent" });
+      } else {
+        db.collection("followRequest")
+          .add(FollowRequest)
+          .then((doc) => {
+            console.log(doc.id);
+            return res.status(200).json({ success: " following request sent" });
+          })
+          .catch((e) => {
+            console.error(e);
+            return res.status(500).json({ error: "something went wrong" });
+          });
+      }
     })
     .catch((e) => {
       console.error(e);
       return res.status(500).json({ error: "something went wrong" });
+    });
+};
+
+exports.acceptFollowRequest = (req, res) => {
+  const request = {
+    requestId: req.body.requestId,
+    Owner: req.body.Owner,
+    AccountName: req.body.AccountName,
+  };
+  db.collection("followRequest")
+    .doc(request.requestId)
+    .get()
+    .then((doc) => {
+      if (doc.exists) {
+        db.collection("followRequest")
+          .doc(request.requestId)
+          .delete()
+          .then(() => {
+            console.log("yessyess");
+            db.collection("follows").add({
+              follow: request.Owner,
+              followed: request.AccountName,
+              dateFollow: new Date().toISOString(),
+            });
+            res.status(200).json({ accepted: "invitation accepted " });
+          })
+          .catch((e) => {
+            res.status(500).json({ error: "something wrong" });
+          });
+      } else {
+        res.status(501).json({ error: "request doesnt exist" });
+      }
+    })
+    .catch((e) => {
+      res.status(500).json({ error: "something wrong 1" });
     });
 };
 
@@ -96,8 +148,8 @@ exports.unFollow = (req, res) => {
   let following = req.body.following;
 
   db.collection("follows")
-    .where("following", "==", follower)
-    .where("followed", "in", [following, following])
+    .where("follow", "==", follow)
+    .where("followed", "in", [followed, followed])
     .get()
     .then((doc) => {
       doc.forEach((element) => {
@@ -107,34 +159,5 @@ exports.unFollow = (req, res) => {
     })
     .catch((e) => {
       return res.status(500).json({ error: "something wrong happened" });
-    });
-};
-
-exports.getfollowingUsers = (req, res) => {
-  let following = [];
-  let username = req.body.follower;
-  db.collection("follows")
-    .where("following", "==", username)
-    .onSnapshot((data) => {
-      /*data.forEach((doc) => {
-        let following = [];
-        db.collection("Users")
-          .where("username", "==", doc.data().followed)
-          .onSnapshot((QuerySnapshot) => {
-            let changes = QuerySnapshot.docChanges();
-            for (change in changes) {
-              following.push(1);
-              console.log(following);
-            }
-          });*/
-      res.send(data);
-      /*(snapshot) => {
-            snapshot.forEach((users) => {
-              let followedUser = {
-                username: users.data().username,
-                isonline: users.data().isonline,
-              };
-              following.push(followedUser);
-            });*/
     });
 };

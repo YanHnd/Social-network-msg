@@ -1,9 +1,12 @@
-import React from 'react'
+import { useDispatch, useSelector } from "react-redux";
+import React, { useEffect, useState } from "react";
+import { test } from "../../Redux/Actions/authUser";
 
 export default function Dashboard() {
-    return (
-        <div className='text-red-500'>
-            <h1>Bienvenue </h1>
-        </div>
-    )
+  const dispatch = useDispatch();
+
+  const testest = () => {
+    dispatch(test());
+  };
+  return (<button onClick={testest}>yesss</button>)
 }

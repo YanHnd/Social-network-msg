@@ -1,5 +1,4 @@
-const firebase = require("firebase");
-const admin = require("firebase-admin");
+/*const firebase = require("firebase");
 const provider = new firebase.auth.FacebookAuthProvider();
 provider.setCustomParameters({
   display: "popup",
@@ -46,3 +45,4 @@ export const signInFacebook = (history, setAuthorizationHeader) => {
       });
   });
 };
+*/

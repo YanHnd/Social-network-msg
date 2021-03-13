@@ -1,16 +1,18 @@
 import { SET_USER, SET_ERRORS, CLEAR_ERRORS, LOADING_UI } from "../types";
 import axios from "axios";
+import { useHistory } from "react-router-dom";
 
-const facebook = require("./Facebook");
+//const facebook = require("./Facebook");
 
-export const loginUser = (userData, history) => (dispatch) => {
+export const loginUser = (userData, history, dispatch) => {
   dispatch({ type: LOADING_UI });
   axios
-    .post("/signIn", userData)
+    .post("/users/signIn", userData)
     .then((res) => {
+      console.log("res");
       setAuthorizationHeader(res.data.token);
       dispatch({ type: CLEAR_ERRORS });
-      history.push("/");
+      history.push("/filActualite");
     })
     .catch((err) => {
       dispatch({
@@ -19,6 +21,10 @@ export const loginUser = (userData, history) => (dispatch) => {
       });
     });
 };
+export const test = (data) => {
+  console.log(data);
+};
+
 /*
 export const loginFacebook = (history) => (dispatch) => {
   try {

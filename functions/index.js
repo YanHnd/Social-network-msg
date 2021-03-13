@@ -15,11 +15,21 @@ app.use(
 const {
   signUp,
   signIn,
-  followUser,
+  SendFollowRequest,
   unFollow,
-  getfollowingUsers,
+  acceptFollowRequest,
 } = require("./Handlers/users");
-const { NotifLikeData, getUserDetails } = require("./Handlers/data");
+
+const { sendMessage } = require("./Handlers/messages");
+
+const {
+  NotifLikeData,
+  getUserDetails,
+  postUserPost,
+  suppUserPost,
+  commentOnPost,
+  getUserPost,
+} = require("./Handlers/data");
 
 const { isAuth } = require("./Util/isAuth");
 
@@ -32,10 +42,17 @@ var port = process.env.PORT || 5000;
 
 app.post("/users/signUp", signUp);
 app.post("/users/signIn", signIn);
-app.post("/users/followUser", followUser); //en cours
+app.post("/users/follow", SendFollowRequest);
+app.post("/users/acceptFollowRequest", acceptFollowRequest); //en cours
 app.post("/users/unFollow", unFollow); //en cours
-app.post("/users/getFollowingUsers", getfollowingUsers); //en cours
+
+app.post("/users/sendMessage", sendMessage);
+
 app.get("/users/NotifLikeData", NotifLikeData);
 app.get("/users/getUserDetails/:username", getUserDetails);
+app.get("/users/getUserPost/:postId", getUserPost);
+app.post("/users/postUserPost", postUserPost);
+app.post("/users/commentOnPost/:postId", commentOnPost);
+app.post("/users/suppUserPost", suppUserPost);
 
 exports.app = functions.https.onRequest(app);

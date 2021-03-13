@@ -2,6 +2,7 @@ let db = {
   users: [
     {
       userId: "",
+      accountName: "",
       email: "",
       firestname: "",
       lastname: "",
@@ -11,8 +12,31 @@ let db = {
       bio: "",
       website: "",
       location: "",
+      NmbrFollow: "",
     },
   ],
+  conversations: [
+    {
+      convId: "",
+      accountName1: "",
+      accountName2: "",
+      creatAt: "",
+      messages: [
+        {
+          sourceName: "",
+          creatAt: "",
+          body: "",
+        },
+      ],
+    },
+  ],
+  follows:[
+    {
+      
+
+  }
+
+  ]
   userPosts: [
     {
       username: "",

@@ -1,3 +1,4 @@
+const { ref } = require("firebase-functions/lib/providers/database");
 const { admin, db } = require("../Util/admin");
 
 exports.sendMessage = (req, res) => {
@@ -22,6 +23,7 @@ exports.sendMessage = (req, res) => {
             sourceName: req.body.accountName1,
             creatAt: new Date().toISOString(),
             body: message,
+            seen: false,
           })
           .then(() => {
             db.collection("Conversations")
@@ -31,6 +33,7 @@ exports.sendMessage = (req, res) => {
                   sourceName: req.body.accountName1,
                   creatAt: new Date().toISOString(),
                   body: message,
+                  seen: false,
                 },
                 LastUpdate: new Date().toISOString(),
               });
@@ -44,7 +47,9 @@ exports.sendMessage = (req, res) => {
             sourceName: req.body.accountName1,
             creatAt: new Date().toISOString(),
             body: message,
+            seen: false,
           },
+
           creatAt: new Date().toDateString(),
           LastUpdate: new Date().toISOString(),
         };
@@ -60,6 +65,8 @@ exports.sendMessage = (req, res) => {
                 sourceName: req.body.accountName1,
                 creatAt: new Date().toISOString(),
                 body: message,
+                seen: false,
+                //imageUrl:req.body.imageUrl
               })
               .then(() => {
                 res.status(200).json({ success: " message envoyé" });
@@ -88,6 +95,69 @@ exports.getConversations = (req, res) => {
         return res.status(200).send(conversations);
       } else {
         return res.status(201).json({ general: "pas de conversations" });
+      }
+    })
+    .catch((e) => {
+      res.status(500).send(e);
+    });
+};
+
+exports.MessageUser = (req, res) => {
+  const convId = req.body.convId;
+  const message = {
+    body: req.body.body,
+    sourceName: req.body.sourceName,
+    imageUrl: req.body.imageUrl,
+    creatAt: new Date().toISOString(),
+    seen: false,
+  };
+  db.collection("Conversations")
+    .doc(convId)
+    .collection("messages")
+    .add(message)
+    .then((doc) => {
+      db.collection("Conversations")
+        .doc(convId)
+        .update({
+          LastMsg: {
+            sourceName: req.body.sourceName,
+            creatAt: new Date().toISOString(),
+            body: req.body.body,
+            seen: false,
+          },
+          LastUpdate: new Date().toISOString(),
+        })
+        .then(() => {
+          res.status(200).json({ general: "message envoyé" });
+        });
+    })
+    .catch((e) => {
+      res.status(500).json({ error: "something went wrong" });
+    });
+};
+
+exports.ReadMsg = (req, res) => {
+  const convId = req.body.convId;
+  const username = req.body.username;
+  db.collection("Conversations")
+    .doc(convId)
+    .collection("messages")
+    .where("sourceName", "!=", username)
+    .get()
+    .then((doc) => {
+      if (doc.size > 0) {
+        doc.forEach((snap) => {
+          snap.ref.update({ seen: true });
+        });
+        db.collection("Conversations")
+          .doc(convId)
+          .get()
+          .then((doc) => {
+            if (doc.data().LastMsg.sourceName != username) {
+              doc.ref.update({ "LastMsg.seen": true });
+            }
+            res.status(200).json({ succes: "message lu" });
+          });
       }
     })
     .catch((e) => {

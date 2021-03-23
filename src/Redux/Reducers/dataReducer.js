@@ -20,9 +20,30 @@ export default function (state = initialState, action) {
       };
 
     case LOAD_CONVERSATIONS_SUCESS:
+      if (action.payload.length > 0) {
+        if (state.conversations.length > 0) {
+          let payload = action.payload;
+          for (let i = 0; i < payload.length; i++) {
+            const index = state.conversations.findIndex(
+              (conv) => conv.convId === payload[i].convId
+              // console.log(conv.convId);
+              // console.log(payload[i].convId);
+            );
+
+            if (index != -1) {
+              state.conversations.splice(index, 1);
+              state.conversations.unshift(payload[i]);
+            } else {
+              state.conversations.unshift(payload[i]);
+            }
+          }
+        } else {
+          console.log("yess");
+          state.conversations = action.payload;
+        }
+      }
       return {
         ...state,
-        conversations: action.payload,
         loading: false,
       };
     case LOAD_MESSAGES:

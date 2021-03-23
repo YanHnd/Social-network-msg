@@ -20,7 +20,7 @@ const {
   acceptFollowRequest,
 } = require("./Handlers/users");
 
-const { sendMessage } = require("./Handlers/messages");
+const { sendMessage, MessageUser, ReadMsg } = require("./Handlers/messages");
 
 const {
   NotifLikeData,
@@ -47,6 +47,8 @@ app.post("/users/acceptFollowRequest", acceptFollowRequest); //en cours
 app.post("/users/unFollow", unFollow); //en cours
 
 app.post("/users/sendMessage", sendMessage);
+app.post("/users/MessageUser", MessageUser);
+app.post("/users/ReadMsg", ReadMsg);
 
 app.get("/users/NotifLikeData", NotifLikeData);
 app.get("/users/getUserDetails/:username", getUserDetails);
